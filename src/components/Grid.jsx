@@ -3,7 +3,7 @@ import WorkoutCard from './WorkoutCard.jsx'
 
 export default function Grid () {
         const isLocked = true
-        const selectedWorkout = 0
+        const selectedWorkout = 4
 
         return(
                 <div className='training_plan'>
@@ -16,23 +16,29 @@ export default function Grid () {
                                          : "Legs"
 
                                 const trainingPlan = training_plan[workoutindex]
+                                
+                                const dayNum = ((workoutindex/8) <= 1 ) ? '0' + (workoutindex + 1) : workoutindex + 1 
+                                
+                                const icon = workoutindex % 3 === 0  ? (<i className='fa-solid fa-dumbbell'></i> ):
+                                (workoutindex % 3 === 1 ? (<i className='fa-solid fa-weight-hanging'></i>):
+                                (<i className='fa-solid fa-bolt'></i>)
+                                ) 
+
                                 if ( workoutindex === selectedWorkout){
                                         return (
-                                                <WorkoutCard key = {workoutindex}/>
+                                                <WorkoutCard key = {workoutindex} trainingPlan = {trainingPlan}
+                                                type = {type}  workoutindex = {workoutindex} icon = {icon} dayNum = {dayNum}/>
                                                 )}
 
                          return(
                                         <button className = {'card plan-card' + ( isLocked ? 'inactive' : '')}
                                         key = {workoutindex}>
                                                 <div className='plan-card-header'>
-                                                        <p>Day{((workoutindex/8) <= 1 ) ? '0' + (workoutindex + 1) : workoutindex + 1}</p>
-
+                                                        <p>Day{dayNum}</p>
                                                 </div>
+
                                                 {isLocked ? (<i className='fa-solid fa-lock'></i>) : 
-                                                ( workoutindex % 3 === 0  ? (<i className='fa-solid fa-dumbbell'></i> ):
-                                                (workoutindex % 3 === 1 ? (<i className='fa-solid fa-weight-hanging'></i>):
-                                                (<i className='fa-solid fa-bolt'></i>)
-                                                ) )} 
+                                                (icon)} 
                                         <div className='plan-card-header'>
                                                <h4><b>{type}</b></h4>
                                         </div>
