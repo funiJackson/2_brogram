@@ -1,4 +1,4 @@
-import React, {useState} from "react"
+import React, { useState } from "react"
 import Modal from "./Modal"
 import { exerciseDescriptions } from "../utils"
 
@@ -18,6 +18,7 @@ export default function WorkoutCard (props) {
                 }
                 setWeights(newObj)
         }
+
 
         return(
                 <div className="workout-container"> 
@@ -107,7 +108,7 @@ export default function WorkoutCard (props) {
                                 <button onClick={()=>{
                                         handleComplete ( workoutindex, {weights})
                                 }}
-                                disabled={true}>Complete</button>
+                                disabled={Object.keys(weights).length !== workout.length}>Complete</button>
                         </div>
 
                 </div>

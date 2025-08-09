@@ -1,24 +1,52 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { workoutProgram as training_plan } from '../utils/index.js'
 import WorkoutCard from './WorkoutCard.jsx'
 
 export default function Grid () {
-        const [ savedWorkout, setsavedWorkout ] = useState(null)
+        const [ savedWorkouts, setSavedWorkouts ] = useState(null)
         const [ selectedWorkout, setselectedWorkout ] = useState(null)
-        const completedWorkout = []
-        const isLocked = false
+        const completedWorkout = Object.keys(savedWorkouts || {}).filter((val) => {
+                const entry = savedWorkouts[val]
+                return entry.isComplete
+        })
 
         function handleSave( index, data ){
+                const newObj = {
+                        ...savedWorkouts,
+                        [index] : {
+                                ...data,
+                                isComplete: !!data.isComplete || !!savedWorkouts?.[index]?.isComplete
+                        }
+                }
+                setSavedWorkouts(newObj)
+                localStorage.setItem('brogram', JSON.stringify(newObj))
+                setselectedWorkout(null)
 
         }
 
         function handleComplete( index, data ){
+                const newObj = { ...data }
+                newObj.isComplete = true
+                handleSave (index, newObj)
 
         }
+
+         useEffect(()=>{
+                        if (!localStorage) {return}
+                        let savedData = {}
+                        if ( localStorage.getItem('brogram')){
+                                savedData = JSON.parse(localStorage.getItem('brogram'))
+                        }
+                        setSavedWorkouts (savedData)
+                },[])
 
         return(
                 <div className='training-plan-grid'>
                         {Object.keys(training_plan).map((workout, workoutindex) =>{
+
+                                const isLocked = workoutindex === 0 ?
+                                false :
+                                !completedWorkout.includes(`${workoutindex-1}`)
                                 
                                 const type = workoutindex % 3 === 0 ? 
                                 'Push' : 
@@ -38,11 +66,11 @@ export default function Grid () {
                                 if ( workoutindex === selectedWorkout){
                                         return (
                                                 <WorkoutCard key = {workoutindex} trainingPlan = {trainingPlan}
-                                                type = {type}  workoutindex = {workoutindex} icon = {icon} dayNum = {dayNum}/>
+                                                type = {type}  workoutindex = {workoutindex} icon = {icon} dayNum = {dayNum} handleComplete ={handleComplete} handleSave = {handleSave} savedWeights = {savedWorkouts?.[workoutindex]?.weights}/>
                                                 )}
 
                          return(
-                                        <button onClick = {()=>{
+                                        <button onClick = {()=>{ if(isLocked) {return}
                                                 setselectedWorkout(workoutindex)
                                         }}
                                         className = {'card plan-card' + ( isLocked ? 'inactive' : '')}
